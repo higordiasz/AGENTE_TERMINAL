@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ENCRYPTED_MAIL_SERVICE — Inbox</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        .scanlines {
+      background:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      background-size: 100% 4px, 3px 100%;
+      pointer-events: none;
+    }
+    .grid-bg {
+      background-image: radial-gradient(circle, #13ec5b1a 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    /* Retina overlay animation */
+    @keyframes scanMove {
+      0% { transform: translateY(-120%); opacity: 0.2; }
+      10% { opacity: 0.9; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(120%); opacity: 0.2; }
+    }
+    @keyframes pulseRing {
+      0% { transform: scale(0.98); opacity: 0.55; }
+      50% { transform: scale(1.02); opacity: 0.9; }
+      100% { transform: scale(0.98); opacity: 0.55; }
+    }
+    @keyframes jitter {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(1px); }
+      40% { transform: translateX(-1px); }
+      60% { transform: translateX(1px); }
+      80% { transform: translateX(-1px); }
+    }
+  </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary selection:text-background-dark">
+    <div class="relative flex h-screen w-full flex-col overflow-hidden">
+
+        <!-- TOP BAR -->
+        <header
+            class="flex items-center justify-between border-b border-white/10 bg-background-light dark:bg-background-dark px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3 text-primary">
+                <span class="material-symbols-outlined text-3xl">terminal</span>
+                <h2 class="text-lg font-bold tracking-tighter uppercase">ENCRYPTED_MAIL_SERVICE v4.02</h2>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button class="p-2 hover:bg-white/5 rounded-lg text-white/60 transition-colors" title="Security">
+                    <span class="material-symbols-outlined text-xl">shield</span>
+                </button>
+                <button class="p-2 hover:bg-white/5 rounded-lg text-white/60 transition-colors" title="Settings">
+                    <span class="material-symbols-outlined text-xl">settings</span>
+                </button>
+                <button class="p-2 hover:bg-primary/10 text-primary rounded-lg transition-colors" title="Power">
+                    <span class="material-symbols-outlined text-xl">power_settings_new</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden">
+
+            <!-- SIDEBAR (enxuta) -->
+            <aside
+                class="w-64 border-r border-white/10 bg-background-light dark:bg-background-dark p-4 flex flex-col justify-between shrink-0">
+                <div class="space-y-6">
+                    <div>
+                        <button
+                            class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 rounded-lg text-xs uppercase tracking-widest mb-6">
+                            + NEW_MSG
+                        </button>
+
+                        <div class="space-y-1">
+                            <a class="flex items-center justify-between px-3 py-2 bg-primary/10 text-primary rounded-lg"
+                                href="#">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-xl">inbox</span>
+                                    <span class="text-sm font-medium">Inbox</span>
+                                </div>
+                                <span
+                                    class="text-[10px] font-bold bg-primary text-background-dark px-1.5 py-0.5 rounded">1</span>
+                            </a>
+
+                            <a class="flex items-center gap-3 px-3 py-2 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined text-xl">send</span>
+                                <span class="text-sm font-medium">Sent</span>
+                            </a>
+
+                            <a class="flex items-center gap-3 px-3 py-2 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined text-xl">lock</span>
+                                <span class="text-sm font-medium">Vault</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-white/5">
+                        <p class="text-[10px] uppercase tracking-widest text-white/30 mb-4 px-3">Active Session</p>
+                        <div class="space-y-3 px-3">
+                            <div class="flex items-center gap-2">
+                                <div class="size-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(19,236,91,0.6)]">
+                                </div>
+                                <span class="text-[10px] text-white/50 font-mono">NODE_8829_X</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-white/5 rounded-lg border border-white/5">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="size-8 rounded bg-primary/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-sm">fingerprint</span>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-[10px] text-white truncate font-bold">Anonymous_Node_09</p>
+                            <p class="text-[8px] text-primary/70 truncate">PGP: 0x82...F92A</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div class="w-2/3 h-full bg-primary"></div>
+                    </div>
+                    <p class="text-[8px] text-white/30 mt-1 uppercase">Security Level: High</p>
+                </div>
+            </aside>
+
+            <!-- MAIN -->
+            <main class="flex-1 flex flex-col bg-background-light dark:bg-background-dark overflow-hidden relative">
+                <div class="scanlines absolute inset-0 z-10 opacity-30"></div>
+                <div class="grid-bg absolute inset-0 z-0 opacity-20"></div>
+
+                <!-- message header -->
+                <div class="flex items-center justify-between px-8 py-4 border-b border-white/10 relative z-20">
+                    <div class="flex items-center gap-4">
+                        <a class="text-white/40 hover:text-white transition-colors" href="#" title="Back">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </a>
+                        <div>
+                            <h3 class="text-sm font-bold tracking-tight">MESSAGE_ID: 982-ACX-77</h3>
+                            <p class="text-[10px] text-white/40 uppercase tracking-widest">Received via Onion Relay 4
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button
+                            class="px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-[10px] font-bold uppercase tracking-widest text-white/70">
+                            Archive
+                        </button>
+                        <button
+                            class="px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-[10px] font-bold uppercase tracking-widest text-white/70">
+                            Spam
+                        </button>
+                    </div>
+                </div>
+
+                <!-- message body -->
+                <div class="flex-1 overflow-y-auto p-8 relative z-20">
+                    <div class="max-w-4xl mx-auto space-y-8">
+
+                        <div class="space-y-4 border-b border-white/5 pb-8">
+                            <div class="grid grid-cols-[100px_1fr] items-center gap-3">
+                                <span
+                                    class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">From:</span>
+                                <span class="text-sm text-primary font-mono">ANG3LOFTH3N1GHT
+                                    &lt;anon-relay-9921@torservice.onion&gt;</span>
+                            </div>
+                            <div class="grid grid-cols-[100px_1fr] items-center gap-3">
+                                <span class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">To:</span>
+                                <span class="text-sm text-white/80 font-mono">AGENT_01
+                                    &lt;node-09@encryptmail.sec&gt;</span>
+                            </div>
+                            <div class="grid grid-cols-[100px_1fr] items-center gap-3">
+                                <span
+                                    class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Subject:</span>
+                                <span
+                                    class="text-sm font-bold bg-primary/20 text-primary px-2 py-0.5 rounded border border-primary/30">
+                                    A DÍVIDA DO ABISMO — CONVITE DE OPERAÇÃO
+                                </span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-black/40 border border-white/10 rounded-xl p-8 font-mono text-sm leading-relaxed backdrop-blur-sm">
+                            <div
+                                class="flex items-center gap-2 text-primary/50 mb-6 border-b border-white/5 pb-4 italic">
+                                <span class="material-symbols-outlined text-sm">verified_user</span>
+                                <span>VERIFIED_SENDER: AES-256 E2E Encryption Validated.</span>
+                            </div>
+
+                            <!-- EMAIL CONTENT -->
+                            <div class="space-y-4 text-white/90">
+                                <p>Agente,</p>
+
+                                <p>
+                                    Se você está lendo isso, é porque foi selecionado para uma tarefa que não pode ser
+                                    registrada por vias oficiais.
+                                    Não repasse esta mensagem.
+                                </p>
+
+                                <p>
+                                    A Ordem detectou oscilações contínuas na Membrana em um ponto instável do Atlântico
+                                    Norte.
+                                    O padrão não é natural, e a intensidade aumentou nas últimas 72 horas.
+                                </p>
+
+                                <p class="mt-2">
+                                    <span class="text-primary font-semibold">Data de partida:</span>
+                                    <span class="font-bold">14/02</span>
+                                </p>
+
+                                <p>
+                                    A inserção será feita por meio de um cruzeiro civil. Você embarcará sob identidade
+                                    de cobertura e seguirá
+                                    para a <span class="text-primary font-semibold">Ilha de Santa Alísia</span>.
+                                </p>
+
+                                <p>
+                                    Os dados completos da operação está no nosso novo terminal.
+                                </p>
+
+                                <p class="pt-2">
+                                    O acesso ao anexo e o terminal utiliza autenticação biométrica local. Ao abrir, será
+                                    solicitado
+                                    reconhecimento de retina.
+                                </p>
+
+                                <p class="text-white/70">
+                                    — <span class="text-primary font-bold">ANG3LOFTH3N1GHT</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- ATTACHMENT -->
+                        <div class="bg-black/30 border border-white/10 rounded-xl p-6">
+                            <h4
+                                class="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">attach_file</span>
+                                ATTACHMENTS (1)
+                            </h4>
+
+                            <!-- IMPORTANT: put the file at /files/mission_briefing_confidential.enc -->
+                            <a id="attachmentLink" href="files/mell/AGENT_TERMINAL_V1_0_0.rar"
+                                class="group inline-flex items-center gap-4 p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-primary/5 hover:border-primary/30 transition-all duration-200"
+                                title="Download attachment">
+                                <div class="bg-white/10 p-2 rounded group-hover:bg-primary/20 transition-colors">
+                                    <span
+                                        class="material-symbols-outlined text-white/60 group-hover:text-primary">description</span>
+                                </div>
+                                <div class="text-left">
+                                    <p class="text-xs font-bold text-white/80 group-hover:text-white">
+                                        AGENT_TERMINAL_V1_0_0.exe</p>
+                                    <p class="text-[9px] text-white/40 uppercase tracking-tighter">4.2 MB |
+                                        ENCRYPTED_BLOB</p>
+                                </div>
+                                <span
+                                    class="material-symbols-outlined text-white/20 group-hover:text-primary ml-4">download</span>
+                            </a>
+
+                            <p class="mt-3 text-[10px] text-white/40 uppercase tracking-widest">
+                                Clique no anexo para autenticação biométrica e download.
+                            </p>
+                        </div>
+
+                        <!-- Buttons (optional) -->
+                        <div class="flex flex-wrap gap-4 pt-2">
+                            <button
+                                class="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white font-bold rounded-lg hover:bg-white/10 transition-colors">
+                                <span class="material-symbols-outlined">reply</span>
+                                <span class="text-xs uppercase tracking-widest">REPLY (ANONYMOUS)</span>
+                            </button>
+                            <button id="selfDestructBtn"
+                                class="flex items-center gap-2 px-6 py-3 bg-red-500/10 border border-red-500/30 text-red-400 font-bold rounded-lg hover:bg-red-500/20 transition-colors">
+                                <span class="material-symbols-outlined">timer_10</span>
+                                <span class="text-xs uppercase tracking-widest">SELF-DESTRUCT</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <footer
+                    class="p-4 border-t border-white/10 bg-black/20 flex justify-between items-center text-[10px] text-white/30 uppercase tracking-[0.3em] relative z-20">
+                    <span>End-to-End PGP Active</span>
+                    <span>Node: 127.0.0.1:9050 [TOR_NET]</span>
+                    <span>No logs maintained</span>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- RETINA SCAN OVERLAY -->
+    <div id="retinaOverlay" class="fixed inset-0 hidden items-center justify-center z-[999]">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+
+        <div class="relative w-[min(560px,92vw)] rounded-2xl border border-white/10 bg-black/50 p-8 shadow-2xl">
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">visibility</span>
+                    </div>
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.25em] text-white/40">BIOMETRIC GATE</p>
+                        <h3 class="text-base font-bold tracking-tight text-white">RETINA_VERIFICATION</h3>
+                    </div>
+                </div>
+
+                <button id="retinaClose" class="text-white/40 hover:text-white transition-colors" title="Close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-[240px_1fr] items-center">
+                <!-- Fake retina UI -->
+                <div class="relative mx-auto w-56 h-56 rounded-full border border-primary/30 bg-black/40 overflow-hidden"
+                    style="animation: pulseRing 1.2s ease-in-out infinite;">
+                    <div class="absolute inset-3 rounded-full border border-white/10"></div>
+                    <div class="absolute inset-10 rounded-full border border-white/10"></div>
+
+                    <!-- crosshair -->
+                    <div class="absolute left-1/2 top-0 h-full w-px bg-primary/25"></div>
+                    <div class="absolute top-1/2 left-0 w-full h-px bg-primary/25"></div>
+
+                    <!-- scan line -->
+                    <div id="scanLine"
+                        class="absolute left-0 right-0 top-0 h-10 bg-gradient-to-b from-primary/0 via-primary/25 to-primary/0"
+                        style="animation: scanMove 1.4s linear infinite;"></div>
+
+                    <!-- center core -->
+                    <div
+                        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-primary/20 border border-primary/30">
+                    </div>
+
+                    <!-- noise -->
+                    <div class="absolute inset-0 opacity-20"
+                        style="background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 1px, rgba(0,0,0,0) 3px, rgba(0,0,0,0) 6px);">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="text-xs text-white/60 uppercase tracking-widest">LOCAL AUTH REQUIRED</p>
+                    <p id="retinaStatus" class="font-mono text-sm text-white/90">
+                        Align retina to sensor... <span class="text-primary">[WAIT]</span>
+                    </p>
+
+                    <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div id="retinaBar" class="h-full w-[5%] bg-primary transition-all duration-200"></div>
+                    </div>
+
+                    <div
+                        class="flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-white/30">
+                        <span id="retinaStep">SCAN: 00%</span>
+                        <span>NO_LOGS</span>
+                    </div>
+
+                    <div class="pt-2 text-[10px] text-white/40 uppercase tracking-[0.2em]">
+                        NOTICE: This is a local biometric simulation for roleplay.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Self destruct (visual wipe)
+        const btn = document.getElementById("selfDestructBtn");
+        btn?.addEventListener("click", () => {
+            const main = document.querySelector("main");
+            if (!main) return;
+            main.innerHTML = `
+        <div class="h-full w-full flex items-center justify-center p-8">
+          <div class="max-w-xl text-center bg-black/40 border border-red-500/30 rounded-xl p-10" style="animation: jitter 0.25s linear 8;">
+            <div class="flex justify-center mb-4">
+              <span class="material-symbols-outlined text-red-400 text-5xl">warning</span>
+            </div>
+            <h1 class="text-xl font-bold tracking-tight text-red-200 mb-2">MESSAGE PURGED</h1>
+            <p class="text-white/60 font-mono text-sm">
+              This node has executed a local wipe. Reload to restore (no logs maintained).
+            </p>
+          </div>
+        </div>
+      `;
+        });
+
+        // Retina scan + download
+        const overlay = document.getElementById("retinaOverlay");
+        const closeBtn = document.getElementById("retinaClose");
+        const attachment = document.getElementById("attachmentLink");
+
+        const statusEl = document.getElementById("retinaStatus");
+        const barEl = document.getElementById("retinaBar");
+        const stepEl = document.getElementById("retinaStep");
+
+        let scanTimer = null;
+
+        function openOverlay() {
+            overlay.classList.remove("hidden");
+            overlay.classList.add("flex");
+        }
+
+        function closeOverlay() {
+            overlay.classList.add("hidden");
+            overlay.classList.remove("flex");
+            if (scanTimer) {
+                clearInterval(scanTimer);
+                scanTimer = null;
+            }
+        }
+
+        function startScanAndDownload(fileHref, filename) {
+            openOverlay();
+
+            let pct = 0;
+            statusEl.innerHTML = `Align retina to sensor... <span class="text-primary">[WAIT]</span>`;
+            barEl.style.width = "5%";
+            stepEl.textContent = "SCAN: 00%";
+
+            if (scanTimer) clearInterval(scanTimer);
+
+            scanTimer = setInterval(() => {
+                pct += Math.floor(Math.random() * 12) + 6; // 6..17
+                if (pct > 100) pct = 100;
+
+                barEl.style.width = pct + "%";
+                stepEl.textContent = "SCAN: " + String(pct).padStart(2, "0") + "%";
+
+                if (pct < 45) {
+                    statusEl.innerHTML = `Scanning retinal pattern... <span class="text-primary">[READ]</span>`;
+                } else if (pct < 85) {
+                    statusEl.innerHTML = `Matching biometric hash... <span class="text-primary">[VERIFY]</span>`;
+                } else if (pct < 100) {
+                    statusEl.innerHTML = `Decrypting attachment header... <span class="text-primary">[OK]</span>`;
+                } else {
+                    statusEl.innerHTML = `ACCESS GRANTED <span class="text-primary">[DOWNLOAD]</span>`;
+                    clearInterval(scanTimer);
+                    scanTimer = null;
+
+                    // small delay for effect then download
+                    setTimeout(() => {
+                        const a = document.createElement("a");
+                        a.href = fileHref;
+                        a.download = filename || "";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+
+                        setTimeout(() => closeOverlay(), 700);
+                    }, 650);
+                }
+            }, 240);
+        }
+
+        attachment?.addEventListener("click", (e) => {
+            e.preventDefault();
+            const href = attachment.getAttribute("href");
+            if (!href) return;
+            startScanAndDownload(href, "mission_briefing_confidential.enc");
+        });
+
+        closeBtn?.addEventListener("click", () => closeOverlay());
+        overlay?.addEventListener("click", (e) => {
+            if (e.target === overlay) closeOverlay();
+        });
+    </script>
+</body>
+
+</html>
